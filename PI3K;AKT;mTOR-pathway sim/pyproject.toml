@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pi3k-akt-mtor"
+version = "0.1.0"
+description = "PI3K/AKT/mTOR pathway ODE simulator with feedback/crosstalk variants."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Proprietary"}
+authors = [{name = "Research Utility"}]
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "pandas>=2.0",
+  "plotly>=5.18",
+  "streamlit>=1.28",
+]
+
+[project.scripts]
+pi3k-akt-mtor = "pi3k_akt_mtor.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

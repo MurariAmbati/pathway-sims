@@ -1,0 +1,100 @@
+Metadata-Version: 2.4
+Name: pi3k-akt-mtor
+Version: 0.1.0
+Summary: PI3K/AKT/mTOR pathway ODE simulator with feedback/crosstalk variants.
+Author: Research Utility
+License: Proprietary
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24
+Requires-Dist: scipy>=1.10
+Requires-Dist: pandas>=2.0
+Requires-Dist: plotly>=5.18
+Requires-Dist: streamlit>=1.28
+
+# PI3K / AKT / mTOR pathway (ODE research utility)
+
+Slug: `pi3k_akt_mtor`
+
+This repo provides an ODE-style, toggleable-variant model of PI3K–AKT–mTOR signaling suitable for exploratory research workflows:
+
+- Baseline PI3K → PIP3 → AKT → (TSC) → mTORC1 → S6K
+- Variant toggles:
+  - **Negative feedback**: S6K ⟂ IRS1 (canonical insulin/IGF feedback)
+  - **Crosstalk**: ERK → TSC inhibition; ERK ⟂ IRS1; AMPK ⟂ mTORC1
+  - **Drug multipliers**: PI3K inhibitor, AKT inhibitor, mTORC1 inhibitor
+
+## Model state (normalized activities)
+All state variables are dimensionless fractions in [0, 1].
+
+- `R`: active receptor/RTK
+- `Is`: inhibited IRS1 fraction (IRS1 functional fraction is `I = 1 - Is`)
+- `P`: active PI3K
+- `PIP3`: PIP3 fraction (PIP2 = 1 - PIP3)
+- `Ap`: phosphorylated/active AKT
+- `F`: active FOXO (AKT-inhibited)
+- `Ti`: inhibited TSC fraction (active TSC = 1 - Ti)
+- `M1`: active mTORC1
+- `S`: active S6K
+- `M2`: active mTORC2
+- `X`: active ERK (optional)
+- `K`: active AMPK (optional)
+- `Au`: autophagy activity
+
+### Derived readouts (exported by default)
+- `IRS1_func` = $1-Is$
+- `TSC_act` = $1-Ti$
+- `Growth` (proxy) = $0.6\,M1 + 0.4\,S$
+- `Survival` (proxy) = $0.7\,Ap + 0.3\,M2 - 0.3\,Au$
+- `Metabolism` (proxy) = $0.5\,Ap + 0.5\,M1$
+
+## Core equations (high level)
+Each node uses first-order activation/inactivation kinetics driven by upstream signals.
+
+Examples:
+
+- PI3K activation by receptor and functional IRS1:
+
+$$\frac{dP}{dt} = k_{P,on} \cdot R \cdot I \cdot (1-P) - k_{P,off} \cdot P$$
+
+- PIP3 balance (PI3K vs PTEN-like dephosphorylation):
+
+$$\frac{d(PIP3)}{dt} = v_{PI3K} \cdot P \cdot (1-PIP3) - v_{PTEN} \cdot (PIP3)$$
+
+- AKT phosphorylation from PIP3 (PDK1-like) and mTORC2:
+
+$$\frac{dAp}{dt} = (v_{PDK1} \cdot PIP3 + v_{mTORC2} \cdot M2) \cdot (1-Ap) - v_{deP} \cdot Ap$$
+
+- TSC inhibition by AKT and ERK (optional crosstalk):
+
+$$\frac{dTi}{dt} = (k_{A} \cdot Ap + k_{X} \cdot X) \cdot (1-Ti) - k_{rec} \cdot Ti$$
+
+- mTORC1 activation gated by TSC and inhibited by AMPK (optional):
+
+$$\frac{dM1}{dt} = k_{M1,on} \cdot (1-Ti) \cdot (1-\alpha_K K) \cdot (1-M1) - k_{M1,off} \cdot M1$$
+
+- S6K activation by mTORC1:
+
+$$\frac{dS}{dt} = k_{S,on} \cdot M1 \cdot (1-S) - k_{S,off} \cdot S$$
+
+- IRS1 negative feedback by S6K (variant):
+
+$$\frac{dIs}{dt} = k_{fb} \cdot S \cdot (1-Is) - k_{deinhib} \cdot Is$$
+
+## Run
+
+### CLI
+
+- `pip install -e .`
+- `pi3k-akt-mtor --help`
+- Example:
+  - `pi3k-akt-mtor --variant feedback --t-end 120 --ligand 1.0 --export out.csv`
+
+### Interactive UI
+
+- `streamlit run app.py`
+
+## Notes
+This model is intentionally **modular** and **research-facing**:
+- It aims for interpretability and controlled variants rather than biochemical completeness.
+- Parameters are exposed and grouped; you can export results and re-run with exact settings.

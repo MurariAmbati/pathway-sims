@@ -1,0 +1,2 @@
+[console_scripts]
+pi3k-akt-mtor = pi3k_akt_mtor.cli:main

@@ -1,0 +1,2 @@
+# Optional: Streamlit config can live in .streamlit/config.toml
+# Keeping this file as a placeholder in case you want to add app-wide settings later.

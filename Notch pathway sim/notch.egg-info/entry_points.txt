@@ -1,0 +1,2 @@
+[console_scripts]
+notch = notch.cli:main

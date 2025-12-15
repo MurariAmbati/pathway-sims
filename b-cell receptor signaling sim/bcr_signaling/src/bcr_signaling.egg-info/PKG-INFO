@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: bcr_signaling
+Version: 0.1.0
+Summary: b cell receptor (bcr) signaling simulator
+Requires-Python: >=3.10

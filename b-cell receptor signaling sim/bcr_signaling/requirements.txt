@@ -1,0 +1,7 @@
+streamlit>=1.36
+numpy>=1.26
+pandas>=2.2
+scipy>=1.12
+plotly>=5.22
+networkx>=3.3
+setuptools>=68

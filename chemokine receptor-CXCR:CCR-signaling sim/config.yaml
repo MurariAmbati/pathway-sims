@@ -1,0 +1,64 @@
+# simulation configuration
+
+# general settings
+simulation:
+  duration: 300.0  # seconds
+  timestep: 0.1  # seconds
+  save_interval: 1.0  # seconds
+  random_seed: 42
+
+# tissue geometry
+tissue:
+  size: [200, 200, 100]  # [x, y, z] in μm
+  grid_spacing: 2.0  # μm per grid point
+  type: "inflammation"  # inflammation, lymph_node, simple
+
+# chemokine gradients
+gradients:
+  - name: "CXCL8"
+    receptor_targets: ["CXCR1", "CXCR2"]
+    source_type: "sphere"  # sphere, plane, point
+    source_position: [100, 100, 10]
+    source_radius: 6.0  # grid points
+    source_strength: 10.0  # multiplier
+  
+# cell population
+population:
+  cell_type: "neutrophil"  # neutrophil, t_cell, monocyte
+  n_cells: 50
+  spawn_region:
+    x: [50, 150]
+    y: [50, 150]
+    z: [80, 95]
+  
+  # receptor expression (multipliers)
+  receptors:
+    CXCR1: 1.2
+    CXCR2: 1.5
+    CXCR4: 0.3
+
+# cell properties (overrides)
+cell_properties:
+  basal_speed: 10.0  # μm/min
+  max_speed: 25.0  # μm/min
+  persistence_time: 5.0  # seconds
+  adhesion_threshold: 0.3
+
+# signaling parameters
+signaling:
+  pi3k_activation_rate: 5.0
+  akt_activation_rate: 8.0
+  plc_activation_rate: 6.0
+  erk_activation_rate: 7.0
+  
+# output settings
+output:
+  save_trajectories: true
+  save_gradients: true
+  save_interval: 10  # timesteps
+  output_directory: "results"
+  
+# visualization
+visualization:
+  update_interval: 20  # simulation steps between updates
+  plot_style: "3d"  # 3d, 2d, both
